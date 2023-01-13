@@ -55,12 +55,8 @@ def main(args):
     mean_tr = mean_tr[np.newaxis, :]
     std_tr = np.std(x_tr, axis=0)
     std_tr = std_tr[np.newaxis, :]
-    x_tr = x_tr - np.tile(mean_tr, (x_tr.shape[0], 1)) / np.tile(
-        std_tr, (x_tr.shape[0], 1)
-    )
-    x_tt = x_tt - np.tile(mean_tr, (x_tt.shape[0], 1)) / np.tile(
-        std_tr, (x_tt.shape[0], 1)
-    )
+    x_tr = (x_tr - mean_tr) / std_tr
+    x_tt = (x_tt - mean_tr) / std_tr
 
     # Train models
     baseline = DummyClassifier(strategy="most_frequent").fit(x_tr, y_tr)
