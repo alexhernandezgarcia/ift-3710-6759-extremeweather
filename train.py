@@ -45,6 +45,12 @@ def add_args(parser):
         help="Normalize train and test data",
     )
     parser.add_argument(
+        "--n_iters",
+        default=500,
+        type=int,
+        help="Number of gradient descent iterations",
+    )
+    parser.add_argument(
         "--seed",
         default=0,
         type=int,
@@ -186,7 +192,7 @@ def main(args):
             x_val,
             y_val,
             c_values,
-            n_iters=500,
+            n_iters=args.n_iters,
             do_balanced=args.do_balanced_class_weights,
             seed=args.seed,
         )
@@ -194,7 +200,7 @@ def main(args):
         logreg = logistic_regression_train(
             x_tr,
             y_tr,
-            n_iters=500,
+            n_iters=args.n_iters,
             do_balanced=args.do_balanced_class_weights,
             seed=args.seed,
         )
