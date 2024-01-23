@@ -56,6 +56,11 @@ def add_args(parser):
         help="Do hyper-parameter optimisation with the validation set",
     )
     parser.add_argument(
+        "--do_balanced_class_weights",
+        action="store_true",
+        help="Use balanced class weights in the loss function",
+    )
+    parser.add_argument(
         "--do_print",
         action="store_true",
         help="Print information during execution",
@@ -107,17 +112,29 @@ def normalize(x_tr, x_val, x_tt):
     return x_tr, x_val, x_tt
 
 
-def logistic_regression_train(x_tr, y_tr, n_iters=500, seed=0):
-    return LogisticRegression(max_iter=n_iters, random_state=seed).fit(x_tr, y_tr)
+def logistic_regression_train(x_tr, y_tr, n_iters=500, do_balanced=False, seed=0):
+    if do_balanced:
+        class_weight = "balanced"
+    else:
+        class_weight = None
+    return LogisticRegression(
+        max_iter=n_iters, class_weight=class_weight, random_state=seed
+    ).fit(x_tr, y_tr)
 
 
 def logistic_regression_validate_reg_train(
-    x_tr, y_tr, x_val, y_val, c_values, n_iters=500, seed=0
+    x_tr, y_tr, x_val, y_val, c_values, n_iters=500, do_balanced=False, seed=0
 ):
+    if do_balanced:
+        class_weight = "balanced"
+    else:
+        class_weight = None
     models = []
     for c in c_values:
         models.append(
-            LogisticRegression(C=c, max_iter=n_iters, random_state=seed).fit(x_tr, y_tr)
+            LogisticRegression(
+                C=c, max_iter=n_iters, class_weight=class_weight, random_state=seed
+            ).fit(x_tr, y_tr)
         )
     acc = [evaluate_accuracy(model, x_val, y_val) for model in models]
     return models[np.argmax(acc)]
@@ -164,10 +181,23 @@ def main(args):
     if args.do_hp_validation and len(x_val) > 0:
         c_values = 10.0 ** np.arange(-2, 3)
         logreg = logistic_regression_validate_reg_train(
-            x_tr, y_tr, x_val, y_val, c_values, n_iters=500, seed=args.seed
+            x_tr,
+            y_tr,
+            x_val,
+            y_val,
+            c_values,
+            n_iters=500,
+            do_balanced=args.do_balanced_class_weights,
+            seed=args.seed,
         )
     else:
-        logreg = logistic_regression_train(x_tr, y_tr, n_iters=500, seed=args.seed)
+        logreg = logistic_regression_train(
+            x_tr,
+            y_tr,
+            n_iters=500,
+            do_balanced=args.do_balanced_class_weights,
+            seed=args.seed,
+        )
 
     # Evaluation
     baseline_acc_tr = evaluate_accuracy(baseline, x_tr, y_tr)
