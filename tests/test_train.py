@@ -11,7 +11,7 @@ train_path = "./data/train.csv"
 test_path = "./data/test.csv"
 
 def test__read_data__returns_reasonable_structures():
-    x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path, do_print=False)
+    x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path)
     # Check that returned types are np.ndarray
     assert isinstance(x_tr, np.ndarray)
     assert isinstance(x_tt, np.ndarray)
@@ -23,6 +23,7 @@ def test__read_data__returns_reasonable_structures():
     assert y_tt.ndim == 1
 
 def test__normalize__yields_expected_statistics():
-    x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path, do_print=False)
-    x_tr, x_tt = normalize(x_tr, x_tt)
+    x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path)
+    x_val = []
+    x_tr, x_val, x_tt = normalize(x_tr, x_val, x_tt)
     assert all(np.isclose(x_tr.mean(axis=0), np.zeros(x_tr.shape[1])))
