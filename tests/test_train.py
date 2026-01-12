@@ -2,13 +2,14 @@ import sys
 
 import pytest
 
-sys.path.append('../')
+sys.path.append("../")
 import numpy as np
 
 from train import normalize, read_data
 
 train_path = "./data/train.csv"
 test_path = "./data/test.csv"
+
 
 def test__read_data__returns_reasonable_structures():
     x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path)
@@ -21,6 +22,7 @@ def test__read_data__returns_reasonable_structures():
     assert x_tr.shape[1] == x_tt.shape[1]
     assert y_tr.ndim == 1
     assert y_tt.ndim == 1
+
 
 def test__normalize__yields_expected_statistics():
     x_tr, x_tt, y_tr, y_tt = read_data(train_path, test_path)

@@ -1,6 +1,7 @@
 """
 A script to train a machine learning model on ClimateNet
 """
+
 from argparse import ArgumentParser
 
 import numpy as np
